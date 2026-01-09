@@ -5,15 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mesa de Sobremesas | Mandiê Doceria</title>
     <meta name="description" content="Transforme seu evento com as mesas de sobremesas exclusivas da Mandiê Doceria. Sofisticação, sabor e arte para casamentos e eventos premium em Brasília." />
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- React & ReactDOM (UMD for local file support) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel Standalone -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
       body {
         font-family: 'Lato', sans-serif;
         background-color: #FFF4E7;
         color: #522B00;
+        overflow-x: hidden;
       }
       h1, h2, h3, h4, h5, h6 {
         font-family: 'Playfair Display', serif;
@@ -21,7 +34,6 @@
       .scroll-smooth {
         scroll-behavior: smooth;
       }
-      /* Custom scrollbar */
       ::-webkit-scrollbar {
         width: 10px;
       }
@@ -36,18 +48,896 @@
         background: #522B00;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-  }
-}
-</script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // --- CONSTANTS ---
+      const PHONE_NUMBER = "556192597078";
+
+      // --- ICONS (Inlined for stability) ---
+      const IconBase = ({ children, ...props }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>{children}</svg>
+      );
+      const Palette = (props) => <IconBase {...props}><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></IconBase>;
+      const Award = (props) => <IconBase {...props}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></IconBase>;
+      const Heart = (props) => <IconBase {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></IconBase>;
+      const MessageCircle = (props) => <IconBase {...props}><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></IconBase>;
+      const FileText = (props) => <IconBase {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></IconBase>;
+      const Utensils = (props) => <IconBase {...props}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></IconBase>;
+      const CheckCircle = (props) => <IconBase {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></IconBase>;
+      const Truck = (props) => <IconBase {...props}><rect width="16" height="13" x="2" y="5" rx="2"/><path d="M16 3h6v12h-6z"/><path d="M2 9h16"/><path d="M7 18h.01"/><path d="M17 18h.01"/></IconBase>;
+      const ArrowDown = (props) => <IconBase {...props}><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></IconBase>;
+      const XIcon = (props) => <IconBase {...props}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></IconBase>;
+      const ZoomIn = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></IconBase>;
+      const ChevronLeft = (props) => <IconBase {...props}><polyline points="15 18 9 12 15 6"/></IconBase>;
+      const ChevronRight = (props) => <IconBase {...props}><polyline points="9 18 15 12 9 6"/></IconBase>;
+      const Quote = (props) => <IconBase {...props}><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></IconBase>;
+      const Plus = (props) => <IconBase {...props}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></IconBase>;
+      const Minus = (props) => <IconBase {...props}><line x1="5" y1="12" x2="19" y2="12"/></IconBase>;
+      const Check = (props) => <IconBase {...props}><polyline points="20 6 9 17 4 12"/></IconBase>;
+      const Calendar = (props) => <IconBase {...props}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></IconBase>;
+      const Clock = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></IconBase>;
+      const Shield = (props) => <IconBase {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></IconBase>;
+      const Star = (props) => <IconBase {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></IconBase>;
+      const Instagram = (props) => <IconBase {...props}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></IconBase>;
+      const MapPin = (props) => <IconBase {...props}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></IconBase>;
+      const Mail = (props) => <IconBase {...props}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></IconBase>;
+
+      const FEATURES = [
+        {
+          id: 1,
+          title: "Criações Autorais",
+          description: "Cada mesa é uma criação exclusiva, desenvolvida sob medida para refletir a personalidade do seu evento. Não seguimos modelos prontos, criamos obras únicas.",
+          icon: Palette
+        },
+        {
+          id: 2,
+          title: "Curadoria de Sabores",
+          description: "Combinamos clássicos atemporais como Pavlova de Frutas Vermelhas, Torta de Maçã e Banoffee com criações inovadoras que surpreendem cada convidado.",
+          icon: Award
+        },
+        {
+          id: 3,
+          title: "Visual e Paladar em Harmonia",
+          description: "Mesas imponentes que impressionam visualmente e conquistam pelo sabor. Do planejamento à montagem, cuidamos de cada detalhe para uma experiência memorável.",
+          icon: Heart
+        }
+      ];
+
+      const PROCESS_STEPS = [
+        {
+          id: 1,
+          title: "Conte-nos seu Sonho",
+          description: "Entre em contato pelo WhatsApp e compartilhe suas ideias, tema do evento, número de convidados e preferências de sabores.",
+          icon: MessageCircle
+        },
+        {
+          id: 2,
+          title: "Projeto Sob Medida",
+          description: "Desenvolvemos uma proposta exclusiva com composição da mesa, sabores, decoração e orçamento detalhado especialmente para você.",
+          icon: FileText
+        },
+        {
+          id: 3,
+          title: "Prove Antes de Confirmar",
+          description: "Oferecemos degustação guiada na Mandiê para você conhecer os sabores que vão compor sua mesa especial.",
+          icon: Utensils
+        },
+        {
+          id: 4,
+          title: "Confirmação e Produção",
+          description: "Após aprovação, iniciamos a produção artesanal com antecedência adequada, garantindo perfeição em cada detalhe.",
+          icon: CheckCircle
+        },
+        {
+          id: 5,
+          title: "Montagem Impecável",
+          description: "Nossa equipe leva, monta e garante que sua mesa esteja perfeita no dia e horário combinados.",
+          icon: Truck
+        }
+      ];
+
+      const TESTIMONIALS = [
+        {
+          id: 1,
+          name: "Juliana Santos",
+          role: "Casamento",
+          text: "A mesa de sobremesas foi o ponto alto do nosso casamento! Os convidados não paravam de elogiar. A Chef Amanda entendeu perfeitamente nossa visão e entregou algo ainda mais incrível.",
+          image: "https://picsum.photos/id/64/100/100",
+          stars: 5
+        },
+        {
+          id: 2,
+          name: "Roberto Lima",
+          role: "Aniversário 50 Anos",
+          text: "Contratei para o aniversário de 50 anos da minha mãe e foi simplesmente perfeito. A apresentação era de cinema e o sabor... indescritível!",
+          image: "https://picsum.photos/id/91/100/100",
+          stars: 5
+        },
+        {
+          id: 3,
+          name: "Fernanda & Diego",
+          role: "Bodas de Ouro",
+          text: "Elegância pura. A Mandiê trouxe sofisticação para nossa celebração. O cuidado com cada doce é perceptível. Recomendamos de olhos fechados.",
+          image: "https://picsum.photos/id/65/100/100",
+          stars: 5
+        }
+      ];
+
+      const FAQS = [
+        {
+          question: "Quantas pessoas uma mesa de sobremesas atende?",
+          answer: "Trabalhamos com formatos adaptáveis: Pequena (30-50 pessoas), Média (50-100 pessoas) e Grande (100-200+ pessoas). Calculamos a quantidade ideal de doces por convidado para evitar desperdícios ou faltas."
+        },
+        {
+          question: "Qual a antecedência necessária para encomenda?",
+          answer: "Recomendamos no mínimo 2 semanas para eventos pequenos e idealmente 1 a 2 meses para grandes eventos (casamentos, corporativos), garantindo a reserva da data e o planejamento perfeito."
+        },
+        {
+          question: "A montagem está inclusa no serviço?",
+          answer: "Sim! Nossa equipe especializada realiza o transporte, a montagem completa da mesa no local do evento e a desmontagem das peças decorativas após a festa."
+        },
+        {
+          question: "Posso escolher os sabores da mesa?",
+          answer: "Com certeza. Oferecemos total personalização com a curadoria da Chef Amanda. Você pode mesclar nossos clássicos com sabores que tenham significado especial para você."
+        },
+        {
+          question: "Atendem eventos fora de Brasília?",
+          answer: "Atendemos principalmente o DF. Para locais fora do plano piloto ou entorno, cobramos uma taxa de deslocamento adicional. Consulte-nos sobre sua localidade."
+        },
+        {
+          question: "Fazem degustação antes do evento?",
+          answer: "Sim, mediante agendamento prévio. A degustação tem um valor simbólico que é abatido do valor final caso o contrato seja fechado."
+        },
+        {
+          question: "Qual o investimento para uma mesa de sobremesas?",
+          answer: "O investimento varia conforme a quantidade de doces, complexidade da decoração e personalização. Entre em contato para um orçamento sob medida."
+        }
+      ];
+
+      const GALLERY_ITEMS = [
+        { id: 1, src: "https://picsum.photos/id/1080/600/800", category: "casamentos", title: "Casamento Juliana & Carlos", description: "150 convidados • Clássico Romântico" },
+        { id: 2, src: "https://picsum.photos/id/429/600/600", category: "casamentos", title: "Mini Wedding Sofia", description: "Intimista • Jardim" },
+        { id: 3, src: "https://picsum.photos/id/431/600/900", category: "aniversarios", title: "50 Anos Estilo Garden", description: "Mesa Rústica • Frutas Frescas" },
+        { id: 4, src: "https://picsum.photos/id/1060/600/700", category: "corporativo", title: "Evento Empresarial", description: "Coffee Break Premium" },
+        { id: 5, src: "https://picsum.photos/id/835/600/600", category: "bodas", title: "Bodas de Ouro", description: "Elegância Clássica" },
+        { id: 6, src: "https://picsum.photos/id/292/600/800", category: "casamentos", title: "Mesa de Doces Finos", description: "Casamento Noturno" },
+        { id: 7, src: "https://picsum.photos/id/488/600/500", category: "aniversarios", title: "15 Anos Moderno", description: "Tendência Geométrica" },
+        { id: 8, src: "https://picsum.photos/id/365/600/900", category: "casamentos", title: "Casamento ao Ar Livre", description: "Floral e Leve" },
+        { id: 9, src: "https://picsum.photos/id/493/600/600", category: "bodas", title: "Bodas de Prata", description: "Minimalista" },
+        { id: 10, src: "https://picsum.photos/id/225/600/800", category: "corporativo", title: "Lançamento de Produto", description: "Identidade Visual da Marca" },
+        { id: 11, src: "https://picsum.photos/id/425/600/700", category: "aniversarios", title: "Aniversário Infantil Luxo", description: "Temático Personalizado" },
+        { id: 12, src: "https://picsum.photos/id/517/600/600", category: "casamentos", title: "Destination Wedding", description: "Tropical Chic" },
+      ];
+
+      // --- COMPONENTS ---
+
+      const FloatingWhatsApp = () => {
+        return (
+          <a
+            href={`https://wa.me/${PHONE_NUMBER}?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20as%20mesas%20de%20sobremesas.`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#25D366] hover:bg-[#20b85c] text-white px-5 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 group"
+            aria-label="Falar no WhatsApp"
+          >
+            <span className="font-semibold hidden sm:inline text-sm">Criar Minha Mesa</span>
+            <div className="relative">
+              <MessageCircle className="w-6 h-6 animate-bounce" />
+              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+            </div>
+          </a>
+        );
+      };
+
+      const Hero = () => {
+        const scrollToPortfolio = () => {
+          const element = document.getElementById('portfolio');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        };
+
+        return (
+          <section className="relative w-full h-[85vh] overflow-hidden flex items-center justify-center">
+            <div 
+              className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: 'url("https://images.unsplash.com/photo-1587241321921-91a834d6d191?q=80&w=2070&auto=format&fit=crop")',
+              }}
+            />
+            <div className="absolute inset-0 bg-[#522B00] opacity-40"></div>
+            
+            <div className="relative z-10 container mx-auto px-4 text-center animate-fade-in-up">
+              <div className="inline-block mb-4 px-4 py-1 border border-[#FEFEFE]/30 rounded-full bg-[#FEFEFE]/10 backdrop-blur-sm text-[#FEFEFE] text-sm uppercase tracking-wider font-light">
+                Assinatura da Chef Amanda
+              </div>
+              
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#FEFEFE] mb-6 leading-tight drop-shadow-md">
+                Mesas de Sobremesas que <br/> <span className="italic font-serif text-[#FDAE9C]">Roubam a Cena</span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-[#FEFEFE]/90 max-w-2xl mx-auto mb-10 font-light">
+                Cada detalhe pensado para transformar seu evento em uma experiência inesquecível de sabor e sofisticação.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a 
+                  href={`https://wa.me/${PHONE_NUMBER}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#FDAE9C] text-[#522B00] hover:bg-[#fc9c85] px-8 py-4 rounded-full font-bold text-lg transition-transform hover:scale-105 shadow-lg w-full sm:w-auto"
+                >
+                  Criar Minha Mesa
+                </a>
+                <button 
+                  onClick={scrollToPortfolio}
+                  className="bg-transparent border-2 border-[#FEFEFE] text-[#FEFEFE] hover:bg-[#FEFEFE] hover:text-[#522B00] px-8 py-4 rounded-full font-semibold text-lg transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+                >
+                  Ver Portfólio <ArrowDown size={18} />
+                </button>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const Features = () => {
+        return (
+          <section className="py-20 bg-[#FFF4E7]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-5xl font-bold text-[#522B00] mb-4">
+                  O Que Torna Nossas Mesas Únicas
+                </h2>
+                <div className="w-24 h-1 bg-[#FDAE9C] mx-auto rounded-full"></div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {FEATURES.map((feature) => (
+                  <div 
+                    key={feature.id}
+                    className="bg-[#FEFEFE] p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group border border-transparent hover:border-[#FFE4CB]"
+                  >
+                    <div className="w-16 h-16 bg-[#FFE4CB] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#FDAE9C] transition-colors duration-300">
+                      <feature.icon className="w-8 h-8 text-[#522B00]" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-[#522B00] mb-4">
+                      {feature.title}
+                    </h3>
+                    <p className="text-[#522B00]/80 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const Gallery = () => {
+        const [filter, setFilter] = useState('todos');
+        const [selectedImage, setSelectedImage] = useState(null);
+
+        const categoriesList = [
+          { id: 'todos', label: 'Todas' },
+          { id: 'casamentos', label: 'Casamentos' },
+          { id: 'aniversarios', label: 'Aniversários' },
+          { id: 'corporativo', label: 'Corporativos' },
+          { id: 'bodas', label: 'Bodas' },
+        ];
+
+        const filteredItems = filter === 'todos' 
+          ? GALLERY_ITEMS 
+          : GALLERY_ITEMS.filter(item => item.category === filter);
+
+        return (
+          <section id="portfolio" className="py-20 bg-[#FEFEFE]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-5xl font-bold text-[#522B00] mb-4">
+                  Portfólio de Mesas Criadas
+                </h2>
+                <p className="text-[#522B00]/70 text-lg">Inspiradas em histórias reais, criadas com amor.</p>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-2 mb-12">
+                {categoriesList.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setFilter(cat.id)}
+                    className={`px-6 py-2 rounded-full transition-all duration-300 text-sm md:text-base font-medium
+                      ${filter === cat.id 
+                        ? 'bg-[#522B00] text-[#FEFEFE] shadow-lg scale-105' 
+                        : 'bg-[#FFF4E7] text-[#522B00] hover:bg-[#FFE4CB]'}`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                {filteredItems.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="break-inside-avoid relative group overflow-hidden rounded-xl cursor-pointer shadow-md"
+                    onClick={() => setSelectedImage(item)}
+                  >
+                    <img 
+                      src={item.src} 
+                      alt={item.title} 
+                      className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-[#522B00]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
+                      <h3 className="text-[#FEFEFE] font-serif text-xl font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        {item.title}
+                      </h3>
+                      <p className="text-[#FDAE9C] text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                        {item.description}
+                      </p>
+                      <div className="mt-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-100">
+                        <ZoomIn size={24} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-center mt-12">
+                <a 
+                  href={`https://wa.me/${PHONE_NUMBER}`}
+                  className="inline-block border-b-2 border-[#522B00] text-[#522B00] font-bold text-lg hover:text-[#FDAE9C] hover:border-[#FDAE9C] transition-colors pb-1"
+                >
+                  Quero uma mesa assim no meu evento
+                </a>
+              </div>
+            </div>
+
+            {selectedImage && (
+              <div 
+                className="fixed inset-0 z-50 bg-[#522B00]/95 flex items-center justify-center p-4 backdrop-blur-sm"
+                onClick={() => setSelectedImage(null)}
+              >
+                <button 
+                  className="absolute top-6 right-6 text-white hover:text-[#FDAE9C] transition-colors"
+                  onClick={() => setSelectedImage(null)}
+                >
+                  <XIcon size={40} />
+                </button>
+                
+                <div 
+                  className="relative max-w-4xl w-full bg-white rounded-lg overflow-hidden shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <img 
+                    src={selectedImage.src} 
+                    alt={selectedImage.title} 
+                    className="w-full max-h-[80vh] object-contain bg-black"
+                  />
+                  <div className="p-6 bg-[#FEFEFE] text-center">
+                    <h3 className="text-2xl font-serif font-bold text-[#522B00]">{selectedImage.title}</h3>
+                    <p className="text-[#522B00]/70">{selectedImage.description}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        );
+      };
+
+      const Process = () => {
+        return (
+          <section className="py-24 bg-[#FFF4E7]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+              <div className="text-center mb-20">
+                <h2 className="text-3xl md:text-5xl font-bold text-[#522B00] mb-4">
+                  Como Funciona o Processo
+                </h2>
+                <p className="text-lg text-[#522B00]/70">Transparência e redução de fricção na decisão</p>
+              </div>
+
+              <div className="max-w-5xl mx-auto">
+                <div className="relative">
+                    <div className="absolute left-8 md:left-1/2 top-0 bottom-12 w-1 bg-[#D4BFA5] md:-ml-0.5"></div>
+
+                    <div className="space-y-12 pb-12">
+                      {PROCESS_STEPS.map((step, index) => (
+                        <div key={step.id} className={`relative flex items-center md:justify-between ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                          
+                          <div className="absolute left-8 md:left-1/2 -ml-4 md:-ml-8 w-16 h-16 rounded-full bg-[#FEFEFE] border-4 border-[#FDAE9C] flex items-center justify-center z-10 shadow-lg">
+                            <step.icon className="w-6 h-6 md:w-8 md:h-8 text-[#522B00]" />
+                          </div>
+
+                          <div className={`ml-20 md:ml-0 md:w-[45%] p-6 bg-[#FEFEFE] rounded-2xl shadow-md border-l-4 border-[#FDAE9C] hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'md:text-right md:border-l-0 md:border-r-4' : ''}`}>
+                            <div className="text-[#FDAE9C] font-bold text-6xl opacity-20 absolute top-2 right-4 leading-none select-none">
+                              {step.id}
+                            </div>
+                            <h3 className="text-xl font-bold text-[#522B00] mb-2 relative z-10">{step.title}</h3>
+                            <p className="text-[#522B00]/80 relative z-10">{step.description}</p>
+                          </div>
+                          
+                          <div className="hidden md:block md:w-[45%]"></div>
+                        </div>
+                      ))}
+                    </div>
+                </div>
+
+                <div className="text-center mt-8">
+                  <a 
+                    href={`https://wa.me/${PHONE_NUMBER}`}
+                    className="inline-flex items-center justify-center bg-[#522B00] text-[#FEFEFE] hover:bg-[#3d2000] px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl"
+                  >
+                    Iniciar Conversa Agora
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const Testimonials = () => {
+        const [currentIndex, setCurrentIndex] = useState(0);
+
+        useEffect(() => {
+          const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+          }, 5000);
+          return () => clearInterval(interval);
+        }, []);
+
+        const nextSlide = () => {
+          setCurrentIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+        };
+
+        const prevSlide = () => {
+          setCurrentIndex((prev) => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1));
+        };
+
+        return (
+          <section className="py-24 bg-[#FEFEFE]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+              <h2 className="text-3xl md:text-5xl font-bold text-[#522B00] text-center mb-16">
+                Depoimentos de Clientes
+              </h2>
+
+              <div className="relative max-w-4xl mx-auto">
+                <div className="overflow-hidden p-4">
+                  <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                  >
+                    {TESTIMONIALS.map((testimonial) => (
+                      <div key={testimonial.id} className="w-full flex-shrink-0 px-4">
+                        <div className="bg-[#FFF4E7] rounded-3xl p-8 md:p-12 text-center relative shadow-sm">
+                          <Quote className="absolute top-6 left-6 text-[#FDAE9C] opacity-40 w-12 h-12" />
+                          
+                          <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden border-4 border-[#FEFEFE] shadow-md">
+                            <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />
+                          </div>
+                          
+                          <div className="flex justify-center mb-6 gap-1">
+                            {[...Array(testimonial.stars)].map((_, i) => (
+                              <Star key={i} className="w-5 h-5 text-[#FDAE9C] fill-current" />
+                            ))}
+                          </div>
+
+                          <p className="text-xl md:text-2xl text-[#522B00] italic mb-6 font-serif">
+                            "{testimonial.text}"
+                          </p>
+
+                          <div>
+                            <h4 className="font-bold text-[#522B00] text-lg">{testimonial.name}</h4>
+                            <p className="text-[#522B00]/60 text-sm uppercase tracking-wider">{testimonial.role}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={prevSlide}
+                  className="absolute top-1/2 -left-4 md:-left-12 transform -translate-y-1/2 bg-[#522B00] text-white p-3 rounded-full hover:bg-[#FDAE9C] transition-colors shadow-lg z-10"
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button 
+                  onClick={nextSlide}
+                  className="absolute top-1/2 -right-4 md:-right-12 transform -translate-y-1/2 bg-[#522B00] text-white p-3 rounded-full hover:bg-[#FDAE9C] transition-colors shadow-lg z-10"
+                  aria-label="Próximo"
+                >
+                  <ChevronRight size={24} />
+                </button>
+
+                <div className="flex justify-center mt-8 gap-2">
+                  {TESTIMONIALS.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentIndex(index)}
+                      className={`w-3 h-3 rounded-full transition-all ${
+                        index === currentIndex ? 'bg-[#522B00] w-6' : 'bg-[#D4BFA5]'
+                      }`}
+                      aria-label={`Ir para slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const Flavors = () => {
+        const classics = [
+          "Pavlova de Frutas Vermelhas",
+          "Torta de Maçã com Especiarias",
+          "Banoffee Premium",
+          "Cheesecake de Frutas Vermelhas",
+          "Brownie de Chocolate Belga",
+          "Mousse de Maracujá",
+          "Mini Éclairs Sortidos"
+        ];
+
+        return (
+          <section className="py-24 bg-[#FFE4CB]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-5xl font-bold text-[#522B00] mb-4">
+                  Sabores Clássicos e Exclusivos
+                </h2>
+                <p className="text-[#522B00]/70">Despertar desejo através dos produtos</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+                <div className="bg-[#FEFEFE] p-8 md:p-12 rounded-3xl shadow-xl">
+                  <h3 className="text-2xl font-bold text-[#522B00] mb-8 border-b border-[#FFE4CB] pb-4">
+                    Nossos Clássicos Atemporais
+                  </h3>
+                  <ul className="space-y-4">
+                    {classics.map((item, index) => (
+                      <li key={index} className="flex items-center group cursor-default">
+                        <div className="w-10 h-10 rounded-full bg-[#FFE4CB] flex items-center justify-center mr-4 group-hover:bg-[#FDAE9C] transition-colors overflow-hidden">
+                          <img src={`https://picsum.photos/seed/${index}/100/100`} alt="Doce" className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
+                        </div>
+                        <span className="text-lg text-[#522B00] font-medium group-hover:translate-x-2 transition-transform duration-300">
+                          {item}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="space-y-8">
+                  <h3 className="text-3xl font-serif font-bold text-[#522B00]">
+                    Criações Personalizadas
+                  </h3>
+                  <div className="prose text-[#522B00]/80 text-lg leading-relaxed">
+                    <p className="border-l-4 border-[#FDAE9C] pl-6 italic">
+                      "Além dos nossos clássicos premiados, desenvolvemos sabores exclusivos baseados nas suas preferências. 
+                      Gosta de doce de leite? Adora frutas cítricas? Prefere chocolate amargo? 
+                      Transformamos suas ideias e gostos pessoais em sobremesas únicas que contam a sua história."
+                    </p>
+                  </div>
+                  
+                  <a 
+                    href={`https://wa.me/${PHONE_NUMBER}`}
+                    className="group inline-flex items-center gap-3 bg-[#522B00] text-[#FEFEFE] px-8 py-4 rounded-full font-bold text-lg hover:bg-[#3d2000] transition-all shadow-lg"
+                  >
+                    Criar Meus Sabores Exclusivos
+                    <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+                  </a>
+
+                  <div className="grid grid-cols-2 gap-4 mt-8">
+                     <img src="https://picsum.photos/id/102/300/200" alt="Detail 1" className="rounded-xl shadow-md transform hover:scale-105 transition-transform" />
+                     <img src="https://picsum.photos/id/488/300/200" alt="Detail 2" className="rounded-xl shadow-md transform hover:scale-105 transition-transform mt-8" />
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const FAQ = () => {
+        const [openIndex, setOpenIndex] = useState(0);
+
+        const toggleAccordion = (index) => {
+          setOpenIndex(openIndex === index ? null : index);
+        };
+
+        return (
+          <section className="py-24 bg-[#FEFEFE]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-3xl">
+              <h2 className="text-3xl md:text-5xl font-bold text-[#522B00] text-center mb-12">
+                Perguntas Frequentes
+              </h2>
+
+              <div className="space-y-4">
+                {FAQS.map((faq, index) => (
+                  <div 
+                    key={index} 
+                    className="border border-[#FFE4CB] rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#FDAE9C]"
+                  >
+                    <button
+                      className="w-full flex items-center justify-between p-6 bg-white text-left focus:outline-none"
+                      onClick={() => toggleAccordion(index)}
+                    >
+                      <span className="font-bold text-[#522B00] text-lg pr-4">{faq.question}</span>
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === index ? 'bg-[#FDAE9C] text-[#522B00]' : 'bg-[#FFF4E7] text-[#522B00]'}`}>
+                        {openIndex === index ? <Minus size={16} /> : <Plus size={16} />}
+                      </div>
+                    </button>
+                    
+                    <div 
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="p-6 pt-0 text-[#522B00]/80 border-t border-dashed border-[#FFE4CB] mt-2">
+                        <p className="mb-4">{faq.answer}</p>
+                        
+                        {index === FAQS.length - 1 && (
+                          <a href={`https://wa.me/${PHONE_NUMBER}`} className="inline-flex items-center text-[#522B00] font-bold text-sm hover:text-[#FDAE9C]">
+                            <MessageCircle size={16} className="mr-2" />
+                            Falar no WhatsApp
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const Stats = () => {
+        const stats = [
+          { id: 1, value: "150+", label: "Mesas Criadas" },
+          { id: 2, value: "4.9", label: "Avaliação Google" },
+          { id: 3, value: "98%", label: "Clientes Recomendam" },
+          { id: 4, value: "6", label: "Anos de Experiência" },
+        ];
+
+        return (
+          <section className="py-20 bg-[#FFF4E7]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-[#522B00]">
+                  Números que Comprovam Nossa Excelência
+                </h2>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {stats.map((stat) => (
+                  <div key={stat.id} className="bg-[#FEFEFE] p-8 rounded-2xl shadow-sm text-center transform hover:-translate-y-1 transition-transform">
+                    <div className="text-4xl md:text-5xl font-bold text-[#522B00] mb-2 font-serif">
+                      {stat.value}
+                    </div>
+                    <div className="text-[#522B00]/60 uppercase tracking-wide text-sm font-bold">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const Comparison = () => {
+        const comparisonData = [
+          { feature: "Criação personalizada", common: false, mandie: true },
+          { feature: "Sabores artesanais", common: false, mandie: true },
+          { feature: "Montagem profissional", common: false, mandie: true },
+          { feature: "Curadoria visual", common: false, mandie: true },
+          { feature: "Garantia de qualidade", common: false, mandie: true },
+        ];
+
+        return (
+          <section className="py-24 bg-[#FEFEFE]">
+            <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-5xl font-bold text-[#522B00]">
+                  Compare: Mesa Comum vs Mesa Mandiê
+                </h2>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-[#FFE4CB] shadow-lg">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-[#FFF4E7]">
+                      <th className="py-6 px-4 text-left text-[#522B00] font-bold md:pl-10 w-1/3">Característica</th>
+                      <th className="py-6 px-4 text-center text-[#522B00]/60 font-medium w-1/3">Mesa Comum</th>
+                      <th className="py-6 px-4 text-center text-[#522B00] font-bold bg-[#FFE4CB] w-1/3 border-b-4 border-[#FDAE9C]">Mesa Mandiê ✓</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {comparisonData.map((row, index) => (
+                      <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'}>
+                        <td className="py-4 px-4 md:pl-10 text-[#522B00] font-medium border-b border-gray-100">{row.feature}</td>
+                        <td className="py-4 px-4 text-center border-b border-gray-100">
+                          <XIcon className="inline-block text-gray-300" size={24} />
+                        </td>
+                        <td className="py-4 px-4 text-center bg-[#FFF9F2] border-b border-[#FFE4CB]">
+                           <div className="flex items-center justify-center gap-2 text-[#522B00] font-semibold">
+                             <div className="bg-[#FDAE9C] rounded-full p-1">
+                                <Check className="text-[#522B00]" size={14} strokeWidth={3} />
+                             </div>
+                             <span className="hidden md:inline text-sm">{row.mandie ? 'Exclusiva' : ''}</span>
+                           </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      const ContactForm = ({ isOpen, onClose }) => {
+        if (!isOpen) return null;
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          const name = e.target[0].value;
+          const phone = e.target[1].value;
+          const date = e.target[2].value;
+          const type = e.target[3].value;
+          const msg = e.target[4].value;
+
+          const message = `Olá! Gostaria de um orçamento.\nNome: ${name}\nTelefone: ${phone}\nData: ${date}\nTipo: ${type}\nMensagem: ${msg}`;
+          const encodedMessage = encodeURIComponent(message);
+          
+          window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`, '_blank');
+          onClose();
+        };
+
+        return (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#522B00]/60 backdrop-blur-sm">
+            <div className="bg-[#FEFEFE] rounded-2xl shadow-2xl w-full max-w-lg relative overflow-hidden animate-fade-in-up">
+              <div className="bg-[#FFF4E7] p-6 border-b border-[#FFE4CB] flex justify-between items-center">
+                <h3 className="text-2xl font-bold text-[#522B00]">Solicitar Proposta</h3>
+                <button onClick={onClose} className="text-[#522B00] hover:text-[#FDAE9C]">
+                  <XIcon size={24} />
+                </button>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="p-8 space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-[#522B00] mb-1">Nome Completo*</label>
+                  <input required type="text" className="w-full bg-white text-gray-900 border border-[#D4BFA5] rounded-lg p-3 focus:outline-none focus:border-[#FDAE9C] focus:ring-1 focus:ring-[#FDAE9C]" placeholder="Seu nome" />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                   <div>
+                      <label className="block text-sm font-bold text-[#522B00] mb-1">WhatsApp*</label>
+                      <input required type="tel" className="w-full bg-white text-gray-900 border border-[#D4BFA5] rounded-lg p-3 focus:outline-none focus:border-[#FDAE9C]" placeholder="(61) 99999-9999" />
+                   </div>
+                   <div>
+                      <label className="block text-sm font-bold text-[#522B00] mb-1">Data do Evento*</label>
+                      <input required type="date" className="w-full bg-white text-gray-900 border border-[#D4BFA5] rounded-lg p-3 focus:outline-none focus:border-[#FDAE9C]" />
+                   </div>
+                </div>
+
+                <div>
+                   <label className="block text-sm font-bold text-[#522B00] mb-1">Tipo de Evento</label>
+                   <select className="w-full bg-white text-gray-900 border border-[#D4BFA5] rounded-lg p-3 focus:outline-none focus:border-[#FDAE9C]">
+                      <option>Casamento</option>
+                      <option>Aniversário</option>
+                      <option>Corporativo</option>
+                      <option>Outro</option>
+                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-[#522B00] mb-1">Mensagem (Opcional)</label>
+                  <textarea className="w-full bg-white text-gray-900 border border-[#D4BFA5] rounded-lg p-3 focus:outline-none focus:border-[#FDAE9C] h-24" placeholder="Conte mais detalhes sobre seu sonho..."></textarea>
+                </div>
+
+                <button type="submit" className="w-full bg-[#522B00] text-[#FEFEFE] font-bold py-4 rounded-lg hover:bg-[#3d2000] transition-colors mt-2">
+                  Receber Proposta Personalizada
+                </button>
+              </form>
+            </div>
+          </div>
+        );
+      };
+
+      const FinalCTA = () => {
+        const [isFormOpen, setIsFormOpen] = useState(false);
+
+        return (
+          <>
+            <section className="relative py-32 overflow-hidden flex items-center justify-center">
+              <div 
+                className="absolute inset-0 w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage: 'url("https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=2136&auto=format&fit=crop")',
+                }}
+              />
+              <div className="absolute inset-0 bg-[#522B00] opacity-80 backdrop-blur-[2px]"></div>
+
+              <div className="relative z-10 container mx-auto px-4 lg:px-8 max-w-6xl text-center">
+                <h2 className="text-3xl md:text-5xl font-bold text-[#FEFEFE] mb-6 leading-tight max-w-4xl mx-auto">
+                  Vamos Criar Juntos uma Mesa que seus Convidados <span className="text-[#FDAE9C]">Nunca Esquecerão?</span>
+                </h2>
+                
+                <p className="text-xl text-[#FEFEFE]/80 mb-10 max-w-2xl mx-auto">
+                  Entre em contato agora e receba uma proposta personalizada em até 24 horas.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                  <a 
+                    href={`https://wa.me/${PHONE_NUMBER}`}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#FDAE9C] text-[#522B00] hover:bg-[#fc9c85] px-8 py-5 rounded-full font-bold text-lg transition-transform hover:scale-105 shadow-xl animate-pulse"
+                  >
+                    <MessageCircle size={20} />
+                    Solicitar Orçamento Personalizado
+                  </a>
+                  <button 
+                    onClick={() => setIsFormOpen(true)}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent border-2 border-[#FEFEFE] text-[#FEFEFE] hover:bg-[#FEFEFE] hover:text-[#522B00] px-8 py-5 rounded-full font-bold text-lg transition-all"
+                  >
+                    <Calendar size={20} />
+                    Agendar Degustação
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-6 text-[#FEFEFE]/70 text-sm font-medium">
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} className="text-[#FDAE9C]" />
+                    Resposta em até 24h
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Shield size={16} className="text-[#FDAE9C]" />
+                    Orçamento sem compromisso
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check size={16} className="text-[#FDAE9C]" />
+                    Satisfação garantida
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <ContactForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
+          </>
+        );
+      };
+
+      const App = () => {
+        return (
+          <div className="min-h-screen bg-[#FFF4E7] overflow-x-hidden">
+            <Hero />
+            <Features />
+            <Gallery />
+            <Process />
+            <Testimonials />
+            <Flavors />
+            <FAQ />
+            <Stats />
+            <Comparison />
+            <FinalCTA />
+            <FloatingWhatsApp />
+          </div>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
   </body>
 </html>
